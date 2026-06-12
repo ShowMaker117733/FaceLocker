@@ -1,0 +1,15 @@
+# Python virtual environment
+venv/
+
+# macOS
+.DS_Store
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# YOLO cache / settings
+*.npy

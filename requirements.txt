@@ -1,0 +1,5 @@
+pyobjc-framework-Quartz>=10.0
+pyobjc-framework-Vision>=10.0
+opencv-python>=4.8.0
+ultralytics>=8.0.0
+mss>=9.0.0
