@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "task-clarifier": {
+      "source": "dongshuyan/compass-skills",
+      "sourceType": "github",
+      "skillPath": "skills/task-clarifier/SKILL.md",
+      "computedHash": "cd2d1bafa66c1d3cbeaca19a7abe89b80f23c84d2789fcf86596d12508ea9024"
+    },
+    "task-forest": {
+      "source": "dongshuyan/compass-skills",
+      "sourceType": "github",
+      "skillPath": "skills/task-forest/SKILL.md",
+      "computedHash": "ab8d9d7d41c76f5c204551b339fddbedaf2c9c417edd218cf70597626d03429e"
+    },
+    "user-profile-keeper": {
+      "source": "dongshuyan/compass-skills",
+      "sourceType": "github",
+      "skillPath": "skills/user-profile-keeper/SKILL.md",
+      "computedHash": "033392a207e15ae800a06159b11d79585eda62731d583026d989b874f600952c"
+    }
+  }
+}

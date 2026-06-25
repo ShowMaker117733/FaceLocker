@@ -91,6 +91,9 @@ class YOLODetector:
         except Exception:
             pass
 
+        # FP16 hardware check — MPS supports it, CPU does not
+        self._use_half = str(self._model.device).startswith("mps")
+
     # ------------------------------------------------------------------
     def detect(self, image):
         """Detect faces.  Accepts a CGImage or numpy BGR array.
@@ -110,7 +113,7 @@ class YOLODetector:
             conf=self._conf,
             iou=self._iou,
             imgsz=self._imgsz,
-            half=True,   # FP16 — faster on MPS
+            half=self._use_half,
         )
 
         h, w = bgr.shape[:2]

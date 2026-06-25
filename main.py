@@ -8,12 +8,25 @@ FaceLocker — Real-time Face Detection Overlay for macOS
 - YOLO detection + KCF tracking for smooth 40-60 FPS
 """
 
+import logging
 import signal
+import sys
 import threading
 import time
 
 import mss
 import numpy as np
+
+# ---------------------------------------------------------------------------
+# Logging — stderr, with timestamps
+# ---------------------------------------------------------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
+    stream=sys.stderr,
+)
+log = logging.getLogger("FaceLocker")
 from AppKit import (
     NSApplication,
     NSApplicationActivationPolicyRegular,
@@ -401,8 +414,13 @@ class FaceLocker(NSObject):
     # ------------------------------------------------------------------
 
     def _setup_overlays(self):
-        print("🔧 Loading YOLO face detection model...")
-        yolo = YOLODetector(conf=0.25, iou=0.45, imgsz=640)
+        log.info("Loading YOLO face detection model...")
+        try:
+            yolo = YOLODetector(conf=0.25, iou=0.45, imgsz=640)
+        except Exception as exc:
+            log.critical("Failed to load face detection model: %s", exc)
+            log.critical("Make sure face_yolov8n.pt exists and ultralytics is installed.")
+            sys.exit(1)
         tracker = FaceTracker(yolo, detect_interval=4)
 
         screens = NSScreen.screens()
@@ -418,7 +436,7 @@ class FaceLocker(NSObject):
             ov = ScreenOverlay(screen, tracker, cap)
             self._overlays.append(ov)
 
-        print(f"✅ {len(screens)} display(s) — background capture active")
+        log.info("%d display(s) — background capture active", len(screens))
 
     def _setup_control_panel(self):
         self._control = ControlPanel.alloc().init()
@@ -489,7 +507,7 @@ class FaceLocker(NSObject):
                     ov.update(faces)
                     total_faces += len(faces)
                 except Exception:
-                    pass
+                    log.debug("Frame processing error", exc_info=True)
 
         self._frame_count += 1
         now = time.time()
@@ -524,13 +542,13 @@ class FaceLocker(NSObject):
             self.TICK_INTERVAL, self, "tick:", None, True
         )
 
-        print("=" * 52)
-        print("🔒  FaceLocker started")
-        print("    Capture   : background thread (non-blocking)")
-        print("    Detection : YOLO every 4th tick + KCF tracking")
-        print("    Timer     : 60 Hz")
-        print("    Ctrl+C    : quit")
-        print("=" * 52)
+        log.info("=" * 52)
+        log.info("FaceLocker started")
+        log.info("    Capture   : background thread (non-blocking)")
+        log.info("    Detection : YOLO every 4th tick + KCF tracking")
+        log.info("    Timer     : 60 Hz")
+        log.info("    Ctrl+C    : quit")
+        log.info("=" * 52)
 
         app.run()
 
@@ -540,7 +558,7 @@ class FaceLocker(NSObject):
             c.stop()
         for ov in self._overlays:
             ov.close()
-        print("\n👋  FaceLocker stopped.")
+        log.info("FaceLocker stopped.")
 
 
 # ---------------------------------------------------------------------------

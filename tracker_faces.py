@@ -75,11 +75,14 @@ class FaceTracker:
             return yolo_faces
 
         # ---- Tracking-only frame ------------------------------------
+        alive_trackers = []
         new_bboxes = []
         for t in self._trackers:
             ok, bb = t.update(bgr)
             if ok:
+                alive_trackers.append(t)
                 new_bboxes.append(tuple(int(v) for v in bb))
+        self._trackers = alive_trackers
         self._bboxes = new_bboxes
 
         # pixel (top-left) → normalised (bottom-left)
